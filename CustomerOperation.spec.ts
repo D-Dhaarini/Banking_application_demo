@@ -1,35 +1,40 @@
 import { test, expect } from '@playwright/test';
-test.beforeEach("Customer login", async ({ page }) => {
-    await page.goto("https://www.globalsqa.com/angularJs-protractor/BankingProject/#/login");
-    await page.getByRole("button", { name: "Customer Login" }).click();
-    await page.locator("#userSelect").selectOption({ index: 2 });
-    await page.getByRole("button", { name: "Login" }).click();
-})
+import { CustomerLoginPage } from '../pages/CustomerLoginPage';
+import { DepositPage } from '../pages/DepositPage';
+import { WithdrawalPage } from '../pages/WithdrawalPage';
 
-test("Deposit Amount", async ({ page }) => {
-    await page.getByRole("button", { name: "Deposit" }).click();
 
-    const initialBalance = Number(await page.locator('.center Strong').nth(1).textContent());
-    console.log("Balance before deposit: " + initialBalance.toString());
-    const depositAmount = 10000;
-    await page.getByRole("spinbutton", { name: "Amount" }).fill(depositAmount.toString());
-    await page.getByRole("button", { name: "Deposit" }).nth(1).click();
-    await expect(page.getByText("Deposit Successful")).toBeVisible();
-    const updatedBalance = Number(await page.locator('.center Strong').nth(1).textContent());
-    expect(updatedBalance).toBe(initialBalance + depositAmount);
-    console.log("Amount deposited successfully and balance updated to: " + updatedBalance);
-    });
+
+test.beforeEach('Login as Customer', async ({ page }) => {
+    const loginPage = new CustomerLoginPage(page);
+    await loginPage.navigateToLoginPage();
+    await loginPage.clickCustomerLoginButton();
+    await loginPage.selectUserByIndex(2);
+    await loginPage.clickLoginButton();
+    await expect(page.getByText("welcome Harry potter")).toBeVisible();
+});
+// test("Deposit Amount", async ({ page }) => {
+//     const depositPage = new DepositPage(page);
+//     const initialBalance = Number(await page.locator('.center Strong').nth(1).textContent());
+//     console.log("Balance before deposit: " + initialBalance.toString());
+//     const depositAmount = 2000;
+//     await depositPage.clickDepositButton(depositAmount);
+//     await expect(page.getByText("Deposit Successful")).toBeVisible();
+//     const updatedBalance = Number(await page.locator('.center Strong').nth(1).textContent());
+//     expect(updatedBalance).toBe(initialBalance + depositAmount);
+//     console.log("Amount deposited successfully and balance updated to: " + updatedBalance);
+// });
 
 
 
 test('Withdraw Amount', async ({ page }) => {
     await page.getByRole("button", { name: "Deposit" }).click();
-
+    const depositPage = new DepositPage(page);
+    const withdrawalPage=new WithdrawalPage(page);
     const initialBalance = Number(await page.locator('.center Strong').nth(1).textContent());
     console.log("Balance before deposit: " + initialBalance.toString());
     const depositAmount = 10000;
-    await page.getByRole("spinbutton", { name: "Amount" }).fill(depositAmount.toString());
-    await page.getByRole("button", { name: "Deposit" }).nth(1).click();
+    await depositPage.clickDepositButton(depositAmount);
     await expect(page.getByText("Deposit Successful")).toBeVisible();
     const updatedBalance = Number(await page.locator('.center Strong').nth(1).textContent());
     expect(updatedBalance).toBe(initialBalance + depositAmount);
@@ -40,28 +45,14 @@ test('Withdraw Amount', async ({ page }) => {
         (await page.locator('strong').allTextContents())[3]
     );
     console.log('Balance before withdrawal:', initialWBalance);
-
-    // Open withdrawal page
-    await page.getByRole('button', { name: 'Withdrawl' }).click();
-
-    // Verify withdrawal screen is displayed
-    await expect(
-        page.getByText('Amount to be Withdrawn')
-    ).toBeVisible();
-
     const withdrawAmount = 50;
 
-    // Enter withdrawal amount
-    await page
-        .locator('input[ng-model="amount"]')
-        .fill(withdrawAmount.toString());
-
-    // Click Withdraw button
-    await page.getByRole('button', { name: 'Withdraw' }).last().click();
-
+    // Open withdrawal page
+    
+    
     // Verify success message
-    await
-        expect(page.locator('span.error')).toHaveText('Transaction successful')
+    await withdrawalPage.clickWithdrawalButton(withdrawAmount);
+    await expect(page.locator('span.error')).toHaveText('Transaction successful')
 
     // Capture balance after withdrawal
     const updatedWBalance = Number(
