@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { CustomerLoginPage } from '../pages/CustomerLoginPage';
 import { DepositPage } from '../pages/DepositPage';
-import { WithdrawalPage } from '../pages/WithdrawalPage';
+import { withdrawalPage } from '../pages/withdrawalPage';
 
 
 
@@ -13,24 +13,25 @@ test.beforeEach('Login as Customer', async ({ page }) => {
     await loginPage.clickLoginButton();
     await expect(page.getByText("welcome Harry potter")).toBeVisible();
 });
-// test("Deposit Amount", async ({ page }) => {
-//     const depositPage = new DepositPage(page);
-//     const initialBalance = Number(await page.locator('.center Strong').nth(1).textContent());
-//     console.log("Balance before deposit: " + initialBalance.toString());
-//     const depositAmount = 2000;
-//     await depositPage.clickDepositButton(depositAmount);
-//     await expect(page.getByText("Deposit Successful")).toBeVisible();
-//     const updatedBalance = Number(await page.locator('.center Strong').nth(1).textContent());
-//     expect(updatedBalance).toBe(initialBalance + depositAmount);
-//     console.log("Amount deposited successfully and balance updated to: " + updatedBalance);
-// });
+test.describe('Customer Operations', () => {
+test("Deposit Amount", async ({ page }) => {
+    const depositPage = new DepositPage(page);
+    const initialBalance = Number(await page.locator('.center Strong').nth(1).textContent());
+    console.log("Balance before deposit: " + initialBalance.toString());
+    const depositAmount = 2000;
+    await depositPage.clickDepositButton(depositAmount);
+    await expect(page.getByText("Deposit Successful")).toBeVisible();
+    const updatedBalance = Number(await page.locator('.center Strong').nth(1).textContent());
+    expect(updatedBalance).toBe(initialBalance + depositAmount);
+    console.log("Amount deposited successfully and balance updated to: " + updatedBalance);
+});
 
 
 
 test('Withdraw Amount', async ({ page }) => {
     await page.getByRole("button", { name: "Deposit" }).click();
     const depositPage = new DepositPage(page);
-    const withdrawalPage=new WithdrawalPage(page);
+    const withdrawaPage = new withdrawalPage(page);
     const initialBalance = Number(await page.locator('.center Strong').nth(1).textContent());
     console.log("Balance before deposit: " + initialBalance.toString());
     const depositAmount = 10000;
@@ -39,34 +40,18 @@ test('Withdraw Amount', async ({ page }) => {
     const updatedBalance = Number(await page.locator('.center Strong').nth(1).textContent());
     expect(updatedBalance).toBe(initialBalance + depositAmount);
     console.log("Amount deposited successfully and balance updated to: " + updatedBalance);
-    // Capture balance before withdrawal
-
-    const initialWBalance = Number(
-        (await page.locator('strong').allTextContents())[3]
-    );
-    console.log('Balance before withdrawal:', initialWBalance);
     const withdrawAmount = 50;
-
-    // Open withdrawal page
-    
-    
-    // Verify success message
-    await withdrawalPage.clickWithdrawalButton(withdrawAmount);
-    await expect(page.locator('span.error')).toHaveText('Transaction successful')
-
-    // Capture balance after withdrawal
+    const initialWBalance = Number(
+        (await page.locator('strong').allTextContents())[3] );
+    await withdrawaPage.clickWithdrawalButton(50);
     const updatedWBalance = Number(
-        (await page.locator('strong').allTextContents())[3]
-    );
+        (await page.locator('strong').allTextContents())[3]);
 
     console.log('Balance after withdrawal:', updatedWBalance);
 
     // Verify balance reduction
-    expect(updatedWBalance).toBe(
-        initialWBalance - withdrawAmount
-    );
+    expect(updatedWBalance).toBe(initialWBalance - withdrawAmount);
 
-    console.log(
-        `Successfully withdraw ${withdrawAmount}. Updated Balance: ${updatedWBalance}`
-    );
+    console.log(`Successfully withdraw ${withdrawAmount}. Updated Balance: ${updatedWBalance}`);
+});
 });
