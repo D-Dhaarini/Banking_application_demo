@@ -17,7 +17,9 @@ export class TransactionHistoryPage {
         const trimmedValue = value.map((text) => text.trim());
         //const singleLineValue = trimmedValue.join(' | ').replace(/\s+/g,' '); // Join the array into a single line with a separator
         console.log('table Values:', trimmedValue);
-       // console.log('Single line table Values:', singleLineValue);
+        await expect(this.page.getByRole('link',{name:'Date-Time'})).toBeVisible();
+        await this.page.getByRole('button',{name:'Back'}).click();
+       //console.log('Single line table Values:', singleLineValue);
         
        
     }
