@@ -44,7 +44,7 @@ test("Insufficient Balance Check",async({page})=>{
     console.log("Balance After: "+currentBalance);
 })
 //Multiple Transaction
-test('Multiple Transaction',async({page})=>{
+test('Multiple Transaction and UI Validation of the Balance',async({page})=>{
     const depositPage=new DepositPage(page);
     const transactionPage=new TransactionHistoryPage(page);
     //Deposit -3000
